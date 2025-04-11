@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.FaguiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.fagui_uuid_number as faguiUuidNumber
+        ,a.fagui_name as faguiName
+        ,a.fagui_photo as faguiPhoto
+        ,a.fagui_types as faguiTypes
+        ,a.news_content as newsContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.FaguiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM fagui  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.faguiUuidNumber != '' and params.faguiUuidNumber != null and params.faguiUuidNumber != 'null' ">
+                and a.fagui_uuid_number like CONCAT('%',#{params.faguiUuidNumber},'%')
+            </if>
+            <if test=" params.faguiName != '' and params.faguiName != null and params.faguiName != 'null' ">
+                and a.fagui_name like CONCAT('%',#{params.faguiName},'%')
+            </if>
+            <if test="params.faguiTypes != null and params.faguiTypes != ''">
+                and a.fagui_types = #{params.faguiTypes}
+            </if>
+            <if test=" params.newsContent != '' and params.newsContent != null and params.newsContent != 'null' ">
+                and a.news_content like CONCAT('%',#{params.newsContent},'%')
+            </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
